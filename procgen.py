@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Tuple, Iterator, TYPE_CHECKING, List
 from game_map import GameMap
+import entity_factories
 import tile_types
 import random
 import tcod
@@ -45,10 +46,10 @@ def place_entities(room: RectangularRoom, dungeon: GameMap, max_monsters):
             continue
 
         if random.random() < .8:
-            pass #place an orc
+            entity_factories.orc.spawn(dungeon, x, y)
         
         else:
-            pass #place a troll
+            entity_factories.troll.spawn(dungeon, x, y)
 
 def tunnel_between(
     start: Tuple[int, int], end: Tuple[int, int]

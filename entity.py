@@ -18,7 +18,7 @@ class Entity:
                  name: str="<unnamed>", 
                  blocks_movement: bool=False
                  ) -> None:
-        self.x =x
+        self.x = x
         self.y = y
         self.self = self
         self.char = char
