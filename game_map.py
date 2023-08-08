@@ -5,10 +5,12 @@ from tcod.console import Console
 import tile_types
 if TYPE_CHECKING:
     from entity import Entity
+    from engine import Engine
 
 class GameMap:
-    def __init__(self, width, height, entities: Iterable[Entity]=()) -> None:
+    def __init__(self, engine: Engine, width, height, entities: Iterable[Entity]=()) -> None:
         self.self = self
+        self.engine = engine
         self.width = width
         self.height = height
         self.entities = set(entities)
