@@ -18,8 +18,10 @@ class Engine:
         self.fov_radius = 8
 
     def handle_enemy_turns(self):
-        for entity in self.game_map.entities - {self.player}:
-            print(f"The {entity.name} wishes they could have a real turn")
+        for entity in set(self.game_map.actors) - {self.player}:
+            if entity.ai:
+                entity.ai.perform()
+
 
     def update_fov(self):
         """recompute the visible area based on the players point of view"""
