@@ -1,10 +1,59 @@
 from __future__ import annotations
 from typing import Optional, TYPE_CHECKING
-import tcod
+from enum import Enum
 import tcod.event
-from actions import Action, EscapeAction, BumpAction
+from actions import Action, EscapeAction, BumpAction, WaitAction
 if TYPE_CHECKING:
     from engine import Engine
+
+
+class Direction(Enum):
+    UP = (0, -1)
+    DOWN = (0, 1)
+    RIGHT = (1, 0)
+    LEFT = (-1, 0)
+    UP_LEFT = (-1, -1)
+    UP_RIGHT = (1, -1)
+    DOWN_RIGHT = (1, 1)
+    DOWN_LEFT = (-1, 1)
+
+    def as_tuple(self):
+        return self.value
+
+MOVE_KEYS = {
+    # Arrow keys.
+    tcod.event.KeySym.UP: Direction.UP,
+    tcod.event.KeySym.DOWN: Direction.DOWN,
+    tcod.event.KeySym.LEFT: Direction.LEFT,
+    tcod.event.KeySym.RIGHT: Direction.RIGHT,
+    tcod.event.KeySym.HOME: Direction.UP_LEFT,
+    tcod.event.KeySym.END: Direction.DOWN_LEFT,
+    tcod.event.KeySym.PAGEUP: Direction.UP_RIGHT,
+    tcod.event.KeySym.PAGEDOWN: Direction.DOWN_RIGHT,
+    # Numpad keys.
+    tcod.event.KeySym.KP_1: Direction.DOWN_LEFT,
+    tcod.event.KeySym.KP_2: Direction.DOWN,
+    tcod.event.KeySym.KP_3: Direction.DOWN_RIGHT,
+    tcod.event.KeySym.KP_4: Direction.LEFT,
+    tcod.event.KeySym.KP_6: Direction.RIGHT,
+    tcod.event.KeySym.KP_7: Direction.UP_LEFT,
+    tcod.event.KeySym.KP_8: Direction.UP,
+    tcod.event.KeySym.KP_9: Direction.UP_RIGHT,
+    # Vi keys.
+    tcod.event.KeySym.h: Direction.LEFT,
+    tcod.event.KeySym.j: Direction.DOWN,
+    tcod.event.KeySym.k: Direction.UP,
+    tcod.event.KeySym.l: Direction.RIGHT,
+    tcod.event.KeySym.y: Direction.UP_LEFT,
+    tcod.event.KeySym.u: Direction.UP_RIGHT,
+    tcod.event.KeySym.b: Direction.DOWN_LEFT,
+    tcod.event.KeySym.n: Direction.DOWN_RIGHT,
+}
+WAIT_KEYS = {
+    tcod.event.KeySym.PERIOD,
+    tcod.event.KeySym.KP_5,
+    tcod.event.KeySym.CLEAR,
+}
 
 class EventHandler(tcod.event.EventDispatch[Action]):
     def __init__(self, engine: Engine) -> None:
@@ -32,17 +81,12 @@ class EventHandler(tcod.event.EventDispatch[Action]):
         key = event.sym
         player = self.engine.player
 
-        if key == tcod.event.KeySym.UP:
-            action = BumpAction(player, dx = 0, dy = -1)
-        elif key == tcod.event.KeySym.DOWN:
-            action = BumpAction(player, dx = 0, dy = 1)
-        elif key == tcod.event.KeySym.RIGHT:
-            action = BumpAction(player, dx = 1, dy = 0)
-        elif key == tcod.event.KeySym.LEFT:
-            action = BumpAction(player, dx = -1, dy = 0)
+        if key in MOVE_KEYS:
+            dx, dy = MOVE_KEYS[key].as_tuple()
+            action = BumpAction(player, dx, dy)
 
-        elif key == tcod.event.KeySym.ESCAPE:
-            action = EscapeAction(player)
+        elif key in WAIT_KEYS:
+            action = WaitAction(player)
 
         return action
         
