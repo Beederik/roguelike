@@ -6,6 +6,7 @@ from tcod.context import Context
 from tcod.console import Console
 from tcod.map import compute_fov
 from input_handlers import MainGameEventHandler
+from render_functions import render_health_bar
 if TYPE_CHECKING:
     from entity import Actor
     from game_map import GameMap
@@ -35,10 +36,8 @@ class Engine:
 
     def render(self, console: Console, context: Context):
         self.game_map.render(console=console)
-        console.print(
-            x=1, 
-            y=47,
-            string=f"HP: {self.player.fighter.hp}/{self.player.fighter.max_hp}"
-        )
+
+        render_health_bar(console=console, current_health=self.player.fighter.hp, maximum_health=self.player.fighter.max_hp)
+        
         context.present(console)
         console.clear()
