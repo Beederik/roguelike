@@ -2,6 +2,7 @@ import copy
 import tcod
 from engine import Engine
 import entity_factories
+import color
 from procgen import generate_dungeon
 
 
@@ -9,7 +10,7 @@ def main():
     screen_width=80
     screen_height=50
     map_width=80
-    map_height=45
+    map_height=43
 
     room_max_size = 10
     room_min_size = 6
@@ -35,6 +36,8 @@ def main():
                                 engine=engine)
     
     engine.update_fov()
+
+    engine.message_log.add_message("survive or die and become a puddle that will never move and just sit there and never do anything", color.welcome_text)
 
     with tcod.context.new_terminal( 
         screen_width,
