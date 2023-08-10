@@ -52,7 +52,11 @@ class GameMap:
             choicelist=[self.tiles["light"], self.tiles["dark"]],
             default=tile_types.SHROUD
         )
-        for entity in self.entities:
+
+        #sort the entities for rendering order
+        sorted_entities = sorted(self.entities, key=lambda x: x.render_order.value)
+
+        for entity in sorted_entities:
             #only print entities in the fov
             if self.visible[entity.x, entity.y]:
                 console.print(entity.x, entity.y, entity.char, fg=entity.color)
