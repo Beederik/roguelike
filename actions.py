@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Optional, Tuple, TYPE_CHECKING
 import color
+import random
 if TYPE_CHECKING:
     from engine import Engine
     from entity import Entity, Actor
@@ -71,6 +72,12 @@ class MeleeAction(ActionWithDirection):
             return
 
         damage = self.entity.fighter.power - target.fighter.defense
+
+        if random.random() <= 0.1:
+            damage *= 2
+
+        elif random.random() <= 0.09:
+            damage //= 3
 
         attack_desc = f"{self.entity.name.capitalize()} attacks {target.name}"
 

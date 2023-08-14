@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional, TYPE_CHECKING
+from typing import Any, Optional, TYPE_CHECKING
 from enum import Enum
 import tcod.event
 from actions import Action, EscapeAction, BumpAction, WaitAction
@@ -60,15 +60,25 @@ class EventHandler(tcod.event.EventDispatch[Action]):
         self.self = self
         self.engine = engine
     
-    def handle_events(self) -> None:
-        raise NotImplementedError()
+    def handle_events(self, context: tcod.context.Context) -> None:
+        for event in tcod.event.wait():
+            context.convert_event(event)
+            self.dispatch(event)
+
+    def on_render(self, console: tcod.console.Console):
+        self.engine.render(console)
+
+    def ev_mousemotion(self, event: tcod.event.MouseMotion) -> None:
+        if self.engine.game_map.in_bounds(event.tile.x, event.tile.y):
+            self.engine.mouse_location = event.tile.x, event.tile.y
 
     def ev_quit(self, event: tcod.event.Quit) -> Action | None:
         raise SystemExit()
     
 class MainGameEventHandler(EventHandler):
-    def handle_events(self) -> None:
+    def handle_events(self, context: tcod.context.Context) -> None:
         for event in tcod.event.wait():
+            context.convert_event(event)
             action = self.dispatch(event)
 
             if action is None:
@@ -99,8 +109,9 @@ class MainGameEventHandler(EventHandler):
 
 
 class GameOverEventHandler(EventHandler):
-    def handle_events(self) -> None:
+    def handle_events(self, context: tcod.context.Context) -> None:
         for event in tcod.event.wait():
+            context.convert_event(event)
             action = self.dispatch(event)
 
             if action is None:

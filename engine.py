@@ -2,11 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from tcod.context import Context
 from tcod.console import Console
 from tcod.map import compute_fov
 from input_handlers import MainGameEventHandler
-from render_functions import render_health_bar
+from render_functions import render_health_bar, render_names_at_mouse_location
 from message_log import MessageLog
 if TYPE_CHECKING:
     from entity import Actor
@@ -19,6 +18,7 @@ class Engine:
         self.event_handler: EventHandler = MainGameEventHandler(self)
         self.player = player
         self.fov_radius = 8
+        self.mouse_location = (0, 0)
         self.message_log = MessageLog()
 
     def handle_enemy_turns(self):
@@ -36,12 +36,11 @@ class Engine:
         )
         self.game_map.explored |= self.game_map.visible
 
-    def render(self, console: Console, context: Context):
+    def render(self, console: Console):
         self.game_map.render(console=console)
 
         self.message_log.render(console=console, x=21, y=45, width=40, height=5)
 
         render_health_bar(console=console, current_health=self.player.fighter.hp, maximum_health=self.player.fighter.max_hp)
         
-        context.present(console)
-        console.clear()
+        render_names_at_mouse_location(console=console, x=21, y=44, engine=self)
